@@ -1,5 +1,3 @@
-
-// WAVE ZONE DATA POINT - Backend - No Pesapal, Direct MTN + Airtel
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -8,14 +6,11 @@ app.use(express.json());
 
 const BUSINESS_NAME = "WAVE ZONE DATA POINT";
 const SUPPORT_PHONE = "0748594346";
-// HIDDEN - Set ONLY in Render Environment: RECEIVER_PHONE = 0766250200
 const RECEIVER_PHONE = process.env.RECEIVER_PHONE;
 
-// MTN MoMo Keys - from momodeveloper.mtn.com
 const MTN_SUBSCRIPTION_KEY = process.env.MTN_SUBSCRIPTION_KEY;
 const MTN_API_USER = process.env.MTN_API_USER;
 const MTN_API_KEY = process.env.MTN_API_KEY;
-// Airtel Money Keys - from developers.airtel.africa
 const AIRTEL_CLIENT_ID = process.env.AIRTEL_CLIENT_ID;
 const AIRTEL_CLIENT_SECRET = process.env.AIRTEL_CLIENT_SECRET;
 
@@ -23,7 +18,6 @@ const PACKAGES = { "7HOURS":500, "DAILY":1000, "3DAYS":2200, "WEEKLY":4500 };
 const PACKAGE_NAMES = { "7HOURS":"7 HOURS","DAILY":"DAILY","3DAYS":"3 DAYS","WEEKLY":"WEEKLY" };
 const PACKAGE_HOURS = { "7HOURS":7, "DAILY":24, "3DAYS":72, "WEEKLY":168 };
 
-// In-memory vouchers - For production use MikroTik User Manager / RADIUS
 let vouchers = {};
 
 app.get("/", (req,res)=> res.send("WAVE ZONE DATA POINT Backend Running - "+BUSINESS_NAME));
@@ -41,22 +35,6 @@ app.post("/pay", async (req,res)=>{
   console.log(`PAY via ${provider} -> ${BUSINESS_NAME} -> Receiver ${RECEIVER_PHONE} | Customer ${phone} | ${pkg} | UGX ${amount} | Ref ${reference} | MAC ${mac||""}`);
 
   try{
-    if(provider==="MTN"){
-      // MTN MoMo Collections RequestToPay
-      // POST https://proxy.momoapi.mtn.com/collection/v1_0/requesttopay
-      // Headers: Authorization Bearer <token>, X-Reference-Id: reference, X-Target-Environment: mtnuganda, Ocp-Apim-Subscription-Key: MTN_SUBSCRIPTION_KEY
-      // Body: {amount:String(amount), currency:"UGX", externalId:reference, payer:{partyIdType:"MSISDN", partyId:phone}, payerMessage:BUSINESS_NAME+" - "+PACKAGE_NAMES[pkg], payeeNote:BUSINESS_NAME}
-      console.log("MTN RequestToPay sent to "+phone);
-    } else {
-      // Airtel Money Initiate
-      // POST https://openapi.airtel.africa/merchant/v1/payments/
-      // Headers: Authorization Bearer <airtel_token>, X-Country: UG, X-Currency: UGX
-      // Body: {reference, subscriber:{country:"UG", currency:"UGX", msisdn:phone}, transaction:{amount, country:"UG", currency:"UGX", id:reference}}
-      console.log("Airtel Payment initiated to "+phone);
-    }
-
-    // NOTE: In LIVE mode, create voucher ONLY after callback confirms payment.
-    // For testing, create immediately.
     const voucher = String(Math.floor(1000000000 + Math.random()*8999999999));
     const hours = PACKAGE_HOURS[pkg];
     vouchers[voucher]={phone, package:pkg, packageName:PACKAGE_NAMES[pkg], amount, email, network:provider, reference, mac, expiresAt: Date.now()+hours*60*60*1000, createdAt: Date.now()};
@@ -64,7 +42,6 @@ app.post("/pay", async (req,res)=>{
   }catch(e){ console.log(e); res.json({error:"Payment failed, try again"}); }
 });
 
-// Check voucher - used by MikroTik / Portal
 app.post("/check-voucher", (req,res)=>{
   const {voucher}=req.body;
   const v=vouchers[voucher];
@@ -75,11 +52,3 @@ app.post("/check-voucher", (req,res)=>{
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, ()=> console.log("WAVE ZONE Backend on "+PORT));
-Create also `package.json` in same folder:
-{
-  "name": "wave-zone-data-point-wifi",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "express": "^4.18.2", "cors": "^2.8.5" }
-}
