@@ -1,1 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAVE ZONE DATA POINT - WiFi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#0a1628;color:#fff;min-height:100vh}
+.top{background:linear-gradient(135deg,#0a1628,#0e2a4d);padding:22px 16px 18px;text-align:center;border-bottom:3px solid #00d4ff}
+.logo{font-size:32px;font-weight:900;letter-spacing:1px}
+.logo span{color:#00d4ff}
+.sub{font-size:13px;color:#ff8c00;font-weight:700;margin-top:4px;letter-spacing:2px}
+.badge{background:#ff8c00;color:#000;display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:800;margin-top:10px}
+.wrap{max-width:480px;margin:0 auto;padding:16px}
+.welcome{text-align:center;margin:14px 0 6px}
+.welcome h2{font-size:22px}
+.welcome p{color:#a8c0d8;font-size:13px;margin-top:6px}
+.card{background:#122a4a;border:1px solid #1e4a7a;border-radius:16px;padding:16px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.card.active{border:2px solid #00d4ff;background:#143a5e;box-shadow:0 0 18px #00d4ff55}
+.left b{font-size:18px}
+.left small{display:block;color:#a8c0d8;margin-top:4px;font-size:12px}
+.price{font-size:22px;font-weight:900;color:#00d4ff}
+.price small{display:block;font-size:11px;color:#fff;font-weight:400}
+.btn{width:100%;background:linear-gradient(90deg,#ff8c00,#ff6a00);color:#fff;border:0;padding:16px;border-radius:12px;font-size:18px;font-weight:900;cursor:pointer;margin-top:8px}
+.btn2{width:100%;background:#00d4ff;color:#000;border:0;padding:14px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;margin-top:10px}
+.how{background:#0e223d;border-radius:14px;padding:16px;margin-top:16px}
+.how h3{font-size:15px;margin-bottom:10px;color:#00d4ff}
+.how p{font-size:13px;color:#cbd8e6;line-height:1.7}
+.support{text-align:center;margin:18px 0;font-size:13px;color:#a8c0d8}
+.support a{color:#00d4ff;text-decoration:none;font-weight:800;font-size:16px}
+.footer{text-align:center;font-size:11px;color:#5a7a9a;padding-bottom:20px}
+/* Modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
+.box{background:#fff;color:#111;width:100%;max-width:420px;border-radius:18px;padding:22px;max-height:92vh;overflow:auto}
+.box h3{font-size:20px}
+.box p{font-size:13px;color:#555;margin:8px 0 14px}
+.box label{font-size:13px;font-weight:700;display:block;margin:12px 0 6px}
+.box input{width:100%;padding:14px;border:2px solid #ddd;border-radius:10px;font-size:16px}
+.net{display:flex;gap:10px}
+.net button{flex:1;padding:14px;border-radius:10px;border:2px solid #ddd;font-weight:800;font-size:15px;cursor:pointer;background:#f5f5f5}
+.net button.active{border-color:#00d4ff;background:#e0f7ff}
+.paybtn{width:100%;background:#0a1628;color:#fff;padding:16px;border:0;border-radius:12px;font-size:17px;font-weight:900;margin-top:16px;cursor:pointer}
+.close{float:right;font-size:22px;cursor:pointer}
+.voucher{background:#eafff0;border:2px dashed #00a651;border-radius:12px;padding:16px;text-align:center;margin-top:14px}
+.voucher b{font-size:28px;letter-spacing:3px;color:#0a1628}
+.small{font-size:12px;color:#666;margin-top:8px;text-align:center}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">WAVE <span>ZONE</span></div>
+  <div class="sub">DATA POINT • NAMUWONGO</div>
+  <div class="badge">⚡ FAST • STABLE • AFFORDABLE</div>
+</div>
 
+<div class="wrap">
+  <div class="welcome">
+    <h2>Welcome to WAVE ZONE WiFi</h2>
+    <p>Choose a package, pay with MTN MoMo or Airtel Money, get connected instantly.</p>
+  </div>
+
+  <div id="packages"></div>
+
+  <button class="btn" onclick="openBuy()">BUY SELECTED PACKAGE →</button>
+  <button class="btn2" onclick="openVoucher()">I Already Have a Voucher</button>
+
+  <div class="how">
+    <h3>How It Works - 3 Steps</h3>
+    <p>1. Select package & tap BUY<br>2. Enter phone & approve PIN on your phone (MTN or Airtel)<br>3. Internet releases immediately. When time ends, it stops 100%.</p>
+    <p style="margin-top:10px;color:#00d4ff;font-weight:700">We Accept: ◆ MTN MoMo &nbsp; ● Airtel Money</p>
+  </div>
+
+  <div class="support">Need Help? Call / WhatsApp<br><a href="https://wa.me/256748594346">0748594346</a></div>
+  <div class="footer">WAVE ZONE DATA POINT © 2026 • Namuwongo, Kampala</div>
+</div>
+
+<!-- BUY MODAL -->
+<div class="modal" id="buyModal">
+  <div class="box">
+    <span class="close" onclick="closeBuy()">×</span>
+    <h3 id="buyTitle">Buy Package</h3>
+    <p id="buyDesc"></p>
+    <label>Choose Network *</label>
+    <div class="net">
+      <button id="btnMTN" class="active" onclick="selectNetwork('MTN')">◆ MTN MoMo</button>
+      <button id="btnAirtel" onclick="selectNetwork('AIRTEL')">● Airtel Money</button>
+    </div>
+    <label>Phone Number *</label>
+    <input id="phoneInput" type="tel" placeholder="07XXXXXXXX" maxlength="10">
+    <label>Email (for receipt)</label>
+    <input id="emailInput" type="email" placeholder="you@gmail.com" value="wavezone@gmail.com">
+    <button class="paybtn" id="payBtn" onclick="payNow()">Pay Now →</button>
+    <p id="payMsg" style="text-align:center;font-size:13px;margin-top:10px;color:#d00"></p>
+    <div id="voucherBox" style="display:none" class="voucher">
+      <div style="font-size:13px">✅ Payment Successful!</div>
+      <div style="font-size:12px;margin:6px 0">Your Voucher Code:</div>
+      <b id="voucherCode"></b>
+      <div style="font-size:12px;margin-top:8px">Tap CONNECT below to start browsing</div>
+      <button class="paybtn" style="background:#00a651" onclick="connectVoucher()">CONNECT NOW</button>
+    </div>
+    <p class="small">You will receive a PIN prompt on your phone. Approve it to complete payment.</p>
+  </div>
+</div>
+
+<!-- VOUCHER MODAL -->
+<div class="modal" id="voucherModal">
+  <div class="box">
+    <span class="close" onclick="closeVoucher()">×</span>
+    <h3>Enter Voucher</h3>
+    <p>Enter the voucher code you received after payment.</p>
+    <label>Voucher Code *</label>
+    <input id="voucherInput" type="text" placeholder="e.g. 44966166512" maxlength="10">
+    <button class="paybtn" onclick="connectVoucherManual()">CONNECT</button>
+    <p id="voucherMsg" style="text-align:center;font-size:13px;margin-top:10px;color:#d00"></p>
+  </div>
+</div>
+
+<script>
+const API = "https://wave-zone-data-point-wifi.onrender.com";
+const PACKAGES = [
+  {id:"7HOURS", name:"7 HOURS", price:500, desc:"7 Hours • Fast Browsing", time:"7 Hours"},
+  {id:"DAILY", name:"DAILY", price:1000, desc:"24 Hours • Full Day", time:"24 Hours"},
+  {id:"3DAYS", name:"3 DAYS", price:2200, desc:"72 Hours • 3 Days", time:"72 Hours"},
+  {id:"WEEKLY", name:"WEEKLY", price:4500, desc:"7 Days • 168 Hours", time:"168 Hours"},
+];
+let selected = PACKAGES[0];
+let selectedNetwork = "MTN";
+let lastVoucher = "";
+
+function render(){
+  document.getElementById("packages").innerHTML = PACKAGES.map(p=>`
+    <div class="card ${selected.id===p.id?'active':''}" onclick="selectPkg('${p.id}')">
+      <div class="left"><b>${p.name}</b><small>${p.desc}</small></div>
+      <div class="price">UGX ${p.price}<small>${p.time}</small></div>
+    </div>`).join("");
+}
+function selectPkg(id){ selected = PACKAGES.find(p=>p.id===id); render(); }
+function selectNetwork(n){
+  selectedNetwork = n;
+  document.getElementById("btnMTN").classList.toggle("active", n==="MTN");
+  document.getElementById("btnAirtel").classList.toggle("active", n==="AIRTEL");
+}
+document.getElementById("phoneInput").addEventListener("input", e=>{
+  const v=e.target.value.trim();
+  if(v.startsWith("076")||v.startsWith("077")||v.startsWith("078")) selectNetwork("MTN");
+  if(v.startsWith("070")||v.startsWith("075")) selectNetwork("AIRTEL");
+});
+function openBuy(){
+  document.getElementById("buyTitle").innerText = "Buy "+selected.name;
+  document.getElementById("buyDesc").innerText = selected.desc+" - UGX "+selected.price;
+  document.getElementById("voucherBox").style.display="none";
+  document.getElementById("payMsg").innerText="";
+  document.getElementById("buyModal").classList.add("open");
+}
+function closeBuy(){ document.getElementById("buyModal").classList.remove("open"); }
+function openVoucher(){ document.getElementById("voucherModal").classList.add("open"); }
+function closeVoucher(){ document.getElementById("voucherModal").classList.remove("open"); }
+
+async function payNow(){
+  const phone = document.getElementById("phoneInput").value.trim();
+  const email = document.getElementById("emailInput").value.trim() || "wavezone@gmail.com";
+  if(phone.length!==10 || !phone.startsWith("07")){ document.getElementById("payMsg").innerText="Enter valid 10-digit phone e.g. 07XXXXXXXX"; return; }
+  document.getElementById("payBtn").innerText="Sending Prompt... Wait...";
+  document.getElementById("payMsg").innerText="Sending "+selectedNetwork+" prompt to "+phone+"... Approve PIN on your phone";
+  try{
+    const r = await fetch(API+"/pay",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone, package:selected.id, amount:selected.price, email, network:selectedNetwork, mac: getMac()})});
+    const d = await r.json();
+    if(d.error){ document.getElementById("payMsg").innerText=d.error; document.getElementById("payBtn").innerText="Pay Now →"; return; }
+    lastVoucher = d.voucher;
+    document.getElementById("voucherCode").innerText = d.voucher;
+    document.getElementById("voucherBox").style.display="block";
+    document.getElementById("payMsg").innerText="Payment Confirmed via "+d.network;
+    document.getElementById("payBtn").innerText="Pay Now →";
+  }catch(e){ document.getElementById("payMsg").innerText="Network error. Check connection and try again."; document.getElementById("payBtn").innerText="Pay Now →"; }
+}
+function getMac(){ const u=new URLSearchParams(location.search); return u.get("mac")||""; }
+function connectVoucher(){
+  // MikroTik Hotspot login: send voucher as username/password
+  const u = "http://192.168.10.1/login";
+  const f = document.createElement("form"); f.method="POST"; f.action=u;
+  f.innerHTML=`<input name="username" value="${lastVoucher}"><input name="password" value="${lastVoucher}">`;
+  document.body.appendChild(f); f.submit();
+}
+function connectVoucherManual(){
+  const v=document.getElementById("voucherInput").value.trim();
+  if(v.length<5){ document.getElementById("voucherMsg").innerText="Enter valid voucher"; return; }
+  lastVoucher=v; connectVoucher();
+}
+render();
+</script>
+</body>
+</html>
