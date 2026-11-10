@@ -3,10 +3,11 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use(express.static(__dirname));
 const BUSINESS_NAME = "WAVE ZONE DATA POINT";
 
-app.get("/", (req,res)=> res.send("WAVE ZONE DATA POINT Backend Running - "+BUSINESS_NAME));
+app.get("/", (req,res)=> res.sendFile(__dirname + "/index.html"));
+app.get("/api", (req,res)=> res.send("WAVE ZONE DATA POINT Backend Running - "+BUSINESS_NAME));
 
 const PACKAGES = { "7HOURS":500, "DAILY":1000, "3DAYS":2200, "WEEKLY":4500 };
 const PACKAGE_NAMES = { "7HOURS":"7 HOURS","DAILY":"DAILY","3DAYS":"3 DAYS","WEEKLY":"WEEKLY" };
